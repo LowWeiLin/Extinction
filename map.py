@@ -1,4 +1,4 @@
-
+import Base
 
 class Map:
     size = (100, 100)

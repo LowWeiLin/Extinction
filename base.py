@@ -1,12 +1,13 @@
-
-
+import Map
+import Minion
+import Food
 
 class Base:
 
     # Map
     _map = None
 
-    def initialize():
+    def initialize(self):
         pass
 
     # Returns list of minions from own team
