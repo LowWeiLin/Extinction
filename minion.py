@@ -13,7 +13,7 @@ class Minion:
         self.pos = pos
         self.stats = stats
         
-    def move(self, x, y):
+    def moveTo(self, x, y):
         pass
 
     def attack(self, x, y):

@@ -1,4 +1,5 @@
 import Base
+import random as random
 
 class Map:
     size = (10, 10)
@@ -22,13 +23,23 @@ class Map:
             print row
 
     def getRandomUnoccupiedPos(self):
-        # TODO make this random
-        # TODO make a version that is random within a range.
-        pos = (0,0)
-        if self.isOccupied(pos):
-           return None
-        else:
-            return pos
+        for i in range(100):
+            pos = (int(random.random()%self.size[0]), int(random.random()%self.size[1]))
+            if self.isOccupied(pos) == False:
+               return pos
+        return None
+
+    def clamp(self, x, mn, mx):
+        return max(mn, min(x, mx))
+
+    def getRandomGaussUnoccipiedPos(self, m, sigma=5):
+        for i in range(100):
+            random.gauss(m[0], sigma)
+            pos = (self.clamp(int(random.gauss(m[0], sigma)), 0, self.size[0]-1),
+                   self.clamp(int(random.gauss(m[1], sigma)), 0, self.size[1]-1))
+            if self.isOccupied(pos) == False:
+               return pos
+        return None
 
     def populateFoodRandomly(self):
         pass

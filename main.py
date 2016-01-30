@@ -36,12 +36,21 @@ class Game:
         return Stats.Stats()
 
     def spawnStartingMinion(self, team):
+
         randPos = self._base._map.getRandomUnoccupiedPos()
         if randPos != None:
             stats = self.getStartingStats()
             minion = Minion.Minion(team, randPos, stats)
             # Spawn
             self._base._addMinion(minion)
+
+            randPos = self._base._map.getRandomGaussUnoccipiedPos(randPos)
+            if randPos != None:
+                stats = self.getStartingStats()
+                minion = Minion.Minion(team, randPos, stats)
+                # Spawn
+                self._base._addMinion(minion)
+
 
     def gameLoop(self):
 
