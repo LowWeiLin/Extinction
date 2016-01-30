@@ -8,8 +8,10 @@ class Minion:
     pos = None
     stats = None
 
-    def _initialize(self):
-        self.stats = Stats()
+    def __init__(self, team, pos, stats):
+        self.team = team
+        self.pos = pos
+        self.stats = stats
         
     def move(self, x, y):
         pass

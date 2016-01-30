@@ -8,3 +8,6 @@ class Stats:
     energy = 10
     energyReplenishment = 1
 
+    def takeDamage(self, damage):
+        pass
+
