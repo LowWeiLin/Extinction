@@ -1,8 +1,11 @@
 import Base
+import Food
+import Minion
 import random as random
 
+
 class Map:
-    size = (10, 10)
+    size = (20, 20)
     foodNum = 30
 
 
@@ -19,18 +22,31 @@ class Map:
             self.grid.append([None] * self.size[0])
 
     def printMap(self):
+        asciiGrid = []
         for row in self.grid:
-            print row
+            asciiRow = []
+            for cell in row:
+                if cell == None:
+                    asciiRow.append('-')
+                elif isinstance(cell, Food.Food):
+                    asciiRow.append('F')
+                elif isinstance(cell, Minion.Minion):
+                    asciiRow.append(str(cell.team))
+            asciiGrid.append(asciiRow)
 
-    def getRandomUnoccupiedPos(self):
-        for i in range(100):
-            pos = (int(random.random()%self.size[0]), int(random.random()%self.size[1]))
-            if self.isOccupied(pos) == False:
-               return pos
-        return None
+        for row in asciiGrid:
+            print ''.join(row)
+
 
     def clamp(self, x, mn, mx):
         return max(mn, min(x, mx))
+
+    def getRandomUnoccupiedPos(self):
+        for i in range(100):
+            pos = (random.randint(0,self.size[0]-1), random.randint(0,self.size[1]-1))
+            if self.isOccupied(pos) == False:
+               return pos
+        return None
 
     def getRandomGaussUnoccipiedPos(self, m, sigma=5):
         for i in range(100):
@@ -41,11 +57,46 @@ class Map:
                return pos
         return None
 
+    def getAtPos(self, pos):
+        return self.grid[pos[0]][pos[1]]
+
+    def isOccupied(self, pos):
+        return self.getAtPos(pos) != None
+
+
+    '''
+    Food
+    '''
+
     def populateFoodRandomly(self):
-        pass
+        for i in range(self.foodNum):
+            if len(self.foodList) >= self.foodNum:
+                break
+            self.addRandomFood()
 
     def addRandomFood(self):
-        pass
+        pos = self.getRandomUnoccupiedPos()
+        if pos != None:
+            food = Food.Food(pos, 1)
+            self.addFood(food)
+
+    def addFood(self, food):
+        # Check if cell is occupied
+        if self.isOccupied(food.pos) == False:
+            self.foodList.append(food)
+            pos = food.pos
+            self.grid[pos[0]][pos[1]] = food
+
+    def removeFood(self, food):
+        self.foodList.remove(food)
+        pos = food.pos
+        self.grid[pos.x][pos.y] = None
+        # Repopulate food randomly
+        self.populateFoodRandomly()
+
+    '''
+    Minion
+    '''
 
     def addMinion(self, minion):
         # Check if cell is occupied
@@ -72,12 +123,6 @@ class Map:
     def getMinionsNotInTeam(self, team):
         pass
         
-    def getAtPos(self, pos):
-        return self.grid[pos[0]][pos[1]]
-
-    def isOccupied(self, pos):
-        return self.getAtPos(pos) != None
-
 '''
 m =  Map()
 m.initialize()

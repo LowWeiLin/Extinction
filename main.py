@@ -29,7 +29,6 @@ class Game:
 
         # Find random position near a position?
         self.spawnStartingMinion(player.team)
-        self.spawnStartingMinion(player.team)
 
     def getStartingStats(self):
         # TODO randomize this?
@@ -50,7 +49,6 @@ class Game:
                 minion = Minion.Minion(team, randPos, stats)
                 # Spawn
                 self._base._addMinion(minion)
-
 
     def gameLoop(self):
 
@@ -75,7 +73,7 @@ class Game:
             break
 
     def gameTurn(self, base):
-        pass
+        base._map.populateFoodRandomly()
 
     def gameHasEnded(self):
         return False
