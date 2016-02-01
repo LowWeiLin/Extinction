@@ -17,4 +17,8 @@ class Player:
         # TODO evaluate script provided
 
         # TODO write simple test script
-        pass
+        
+        food = base.findFood()
+        for m in base.findOwnMinions():
+            m.moveTo(food[0].pos)
+

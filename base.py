@@ -16,16 +16,15 @@ class Base:
 
     # Returns list of minions from own team
     def findOwnMinions(self):
-        pass
+        return self._map.getMinionsInTeam(self._teamTurn)
 
     # Returns list of minions from enemy teams
     def findEnemyMinions(self):
-        pass
+        return self._map.getMinionsNotInTeam(self._teamTurn)
 
     # Returns list of food
     def findFood(self):
-        pass
-
+        return self._map.getFood()
 
     def _addMinion(self, minion):
         self._map.addMinion(minion)

@@ -58,11 +58,15 @@ class Map:
         return None
 
     def getAtPos(self, pos):
+        if self.inMapRange(pos) == False:
+            return None
         return self.grid[pos[0]][pos[1]]
 
     def isOccupied(self, pos):
         return self.getAtPos(pos) != None
 
+    def inMapRange(self, pos):
+        return pos[0] >= 0 and pos[0] < self.size[0] and pos[1] >= 0 and pos[1] < self.size[1]
 
     '''
     Food
@@ -94,6 +98,9 @@ class Map:
         # Repopulate food randomly
         self.populateFoodRandomly()
 
+    def getFood(self):
+        return self.foodList
+
     '''
     Minion
     '''
@@ -108,20 +115,28 @@ class Map:
     def removeMinion(self, minion):
         self.minionList.remove(minion)
         pos = minion.pos
-        self.grid[pos.x][pos.y] = None
+        self.grid[pos[0]][pos[1]] = None
 
     def moveMinion(self, minion, newPos):
-        if isOccupied(newPos) == False:
+        if self.isOccupied(newPos) == False:
             pos = minion.pos
-            self.grid[pos.x][pos.y] = None
+            self.grid[pos[0]][pos[1]] = None
             minion.pos = newPos
-            self.grid[newPos.x][newPos.y] = minion
+            self.grid[newPos[0]][newPos[1]] = minion
 
     def getMinionsInTeam(self, team):
-        pass
+        minions = []
+        for m in self.minionList:
+            if m.team == team:
+                minions.append(m)
+        return minions
 
     def getMinionsNotInTeam(self, team):
-        pass
+        minions = []
+        for m in self.minionList:
+            if m.team != team:
+                minions.append(m)
+        return minions
         
 '''
 m =  Map()

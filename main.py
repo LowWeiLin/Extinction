@@ -5,6 +5,8 @@ import Base
 import Player
 import Stats
 
+import time
+
 class Game:
 
     _base = None
@@ -39,14 +41,14 @@ class Game:
         randPos = self._base._map.getRandomUnoccupiedPos()
         if randPos != None:
             stats = self.getStartingStats()
-            minion = Minion.Minion(team, randPos, stats)
+            minion = Minion.Minion(self._base, team, randPos, stats)
             # Spawn
             self._base._addMinion(minion)
 
             randPos = self._base._map.getRandomGaussUnoccipiedPos(randPos)
             if randPos != None:
                 stats = self.getStartingStats()
-                minion = Minion.Minion(team, randPos, stats)
+                minion = Minion.Minion(self._base, team, randPos, stats)
                 # Spawn
                 self._base._addMinion(minion)
 
@@ -70,7 +72,9 @@ class Game:
             # Output game state to display?
             self._base._map.printMap()
 
-            break
+            time.sleep(1)
+            if self._base._turn > 10:
+                break
 
     def gameTurn(self, base):
         base._map.populateFoodRandomly()
