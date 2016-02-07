@@ -18,7 +18,11 @@ class Player:
 
         # TODO write simple test script
         
-        food = base.findFood()
+        foodList = base.findFood()
         for m in base.findOwnMinions():
-            m.moveTo(food[0].pos)
+            index = m.closest(foodList)
+            if index != -1:
+                food = foodList[index]
+                m.moveTo(food.pos)
+                m.pick(food.pos)
 

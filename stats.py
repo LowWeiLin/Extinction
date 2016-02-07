@@ -1,13 +1,15 @@
 
 class Stats:
 
-    hp = 10
-    maxHp = 10
-    dmg = 1
-    actionRange = 10
+    _hp = 10
+    _maxHp = 10
+    _dmg = 1
+    _actionRange = 3
 
-    energy = 10
-    energyReplenishment = 1
+    _energy = 10
+    _energyReplenishment = 1
+
+    _food = 0
 
     def takeDamage(self, damage):
         pass

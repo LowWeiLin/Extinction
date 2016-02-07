@@ -22,6 +22,9 @@ class Game:
         testPlayer = Player.Player(-1, "")
         self.addPlayer(testPlayer)
 
+        # Place food
+        self._base._map.populateFoodRandomly()
+
     def addPlayer(self, player):
         # Add to player list
         player.team = self._playerNextTeam
@@ -62,7 +65,7 @@ class Game:
 
             # Run scripts of all players in turn
             for p in self._players:
-                print "Team", p.team, "-", p.name
+                #print "Team", p.team, "-", p.name
                 self._base._teamTurn = p.team
                 p.runScript(self._base)
 
@@ -70,17 +73,18 @@ class Game:
             self._base._turn += 1
 
             # Output game state to display?
-            self._base._map.printMap()
+            #self._base._map.printMap()
+            #time.sleep(0.1)
 
-            time.sleep(1)
-            if self._base._turn > 10:
-                break
+        print "Turns:", self._base._turn
 
     def gameTurn(self, base):
-        base._map.populateFoodRandomly()
+        #base._map.populateFoodRandomly()
+        pass
 
     def gameHasEnded(self):
-        return False
+        #return self._base._turn > 10
+        return len(self._base._map.foodList) == 0 and self._base._turn > 1
 
 
 def main():

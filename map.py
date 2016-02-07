@@ -94,9 +94,9 @@ class Map:
     def removeFood(self, food):
         self.foodList.remove(food)
         pos = food.pos
-        self.grid[pos.x][pos.y] = None
+        self.grid[pos[0]][pos[1]] = None
         # Repopulate food randomly
-        self.populateFoodRandomly()
+        #self.populateFoodRandomly()
 
     def getFood(self):
         return self.foodList

@@ -2,6 +2,8 @@ import Map
 import Minion
 import Food
 
+import math
+
 class Base:
 
     # Map
@@ -29,3 +31,5 @@ class Base:
     def _addMinion(self, minion):
         self._map.addMinion(minion)
 
+    def dist(self, pos0, pos1):
+        return math.sqrt((pos0[0] - pos1[0])**2 + (pos0[1] - pos1[1])**2)
