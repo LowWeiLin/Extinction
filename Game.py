@@ -19,8 +19,11 @@ class Game:
 
     def initialize(self):
         # Add initial players here
-        testPlayer = Player.Player(-1, "")
-        self.addPlayer(testPlayer)
+        testPlayer0 = Player.Player(0, "P0")
+        self.addPlayer(testPlayer0)
+
+        testPlayer1 = Player.Player(1, "P1")
+        self.addPlayer(testPlayer1)
 
         # Place food
         self._base._map.populateFoodRandomly()
@@ -31,29 +34,16 @@ class Game:
         self._players.append(player)
 
         # Give player starting minions
-
-        # Find random position near a position?
         self.spawnStartingMinion(player.team)
 
-    def getStartingStats(self):
-        # TODO randomize this?
-        return Stats.Stats()
+        self._playerNextTeam += 1
 
     def spawnStartingMinion(self, team):
-
-        randPos = self._base._map.getRandomUnoccupiedPos()
-        if randPos != None:
-            stats = self.getStartingStats()
-            minion = Minion.Minion(self._base, team, randPos, stats)
-            # Spawn
-            self._base._addMinion(minion)
-
-            randPos = self._base._map.getRandomGaussUnoccipiedPos(randPos)
-            if randPos != None:
-                stats = self.getStartingStats()
-                minion = Minion.Minion(self._base, team, randPos, stats)
-                # Spawn
-                self._base._addMinion(minion)
+        # First minion
+        m = self._base._addMinionRand(team)
+        # Second
+        if m != None:
+            self._base._addMinionAroundGauss(m.pos, team)
 
     def gameLoop(self):
 

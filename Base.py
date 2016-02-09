@@ -1,6 +1,7 @@
 import Map
 import Minion
 import Food
+import Stats
 
 import math
 
@@ -28,8 +29,32 @@ class Base:
     def findFood(self):
         return self._map.getFood()
 
+    def getStartingStats(self):
+        # TODO randomize this?
+        return Stats.Stats()
+
     def _addMinion(self, minion):
         self._map.addMinion(minion)
+
+    def _addMinionRand(self, team):
+        randPos = self._map.getRandomUnoccupiedPos()
+        if randPos != None:
+            stats = self.getStartingStats()
+            minion = Minion.Minion(self, team, randPos, stats)
+            # Spawn
+            self._addMinion(minion)
+            return minion
+        return None
+
+    def _addMinionAroundGauss(self, randPos, team):
+        randPos = self._map.getRandomGaussUnoccipiedPos(randPos)
+        if randPos != None:
+            stats = self.getStartingStats()
+            minion = Minion.Minion(self, team, randPos, stats)
+            # Spawn
+            self._addMinion(minion)
+            return minion
+        return None
 
     def dist(self, pos0, pos1):
         return math.sqrt((pos0[0] - pos1[0])**2 + (pos0[1] - pos1[1])**2)

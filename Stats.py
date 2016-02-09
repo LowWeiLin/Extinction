@@ -10,6 +10,7 @@ class Stats:
     _energyReplenishment = 1
 
     _food = 0
+    _reproduceFoodCost = 5
 
     def takeDamage(self, damage):
         pass

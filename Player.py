@@ -20,9 +20,18 @@ class Player:
         
         foodList = base.findFood()
         for m in base.findOwnMinions():
-            index = m.closest(foodList)
-            if index != -1:
-                food = foodList[index]
+            # Go to and pick closest food
+            closestFoodIndex = m.closest(foodList)
+            if closestFoodIndex != -1:
+                food = foodList[closestFoodIndex]
                 m.moveTo(food.pos)
                 m.pick(food.pos)
+
+            # Reproduce
+            ownMinionsExceptSelf = base.findOwnMinions()
+            ownMinionsExceptSelf.remove(m)
+            closestTeamMinionIndex = m.closest(ownMinionsExceptSelf)
+            if closestTeamMinionIndex != -1:
+                friendly = ownMinionsExceptSelf[closestTeamMinionIndex]
+                m.reproduce(friendly.pos)
 

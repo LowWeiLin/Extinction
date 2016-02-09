@@ -9,7 +9,7 @@ class App:
         self._display_surf = None
         self.size = self.weight, self.height = 800, 600
         self._ticks = 0
-        self._maxFps = 30
+        self._maxFps = 15
 
         self.offset = 20
         self.gridUiSize = 3
@@ -51,15 +51,21 @@ class App:
             pos = tuple([int(self.gridUiSize*(x+0.5)+self.offset) for x in food.pos])
             pygame.draw.circle(self._display_surf, color, pos, self.unitUiSize, 0)
 
+        numPlayers = len(self._game._players)
         # Draw minions
         for minion in self._game._base._map.minionList:
-            color = (255, 0, 0)
+            team = minion.team
+            if team == 0:
+                color = (255,0,0)
+            if team == 1:
+                color = (0,0,255)
             pos = tuple([int(self.gridUiSize*(x+0.5)+self.offset) for x in minion.pos])
             pygame.draw.circle(self._display_surf, color, pos, self.unitUiSize, 0)
 
-        # Draw FPS
+        # Draw FPS, ticks
         myfont = pygame.font.SysFont("monospace", 15)
-        fpsLabel = myfont.render("FPS:" + str(round(1000./self._msElapsed, 3)), 1, (0,0,0))
+        string = "FPS:" + str(round(1000./self._msElapsed, 3)) + " " + "Ticks: " + str(self._ticks)
+        fpsLabel = myfont.render(string, 1, (0,0,0))
         self._display_surf.blit(fpsLabel, (0, 0))
 
         # Switch buffer

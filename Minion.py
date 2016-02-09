@@ -57,8 +57,27 @@ class Minion:
     def inActionRange(self, pos):
         return self._base.dist(self.pos, pos) <= self.stats._actionRange
 
-    def reproduce(self, x, y):
-        pass
+    def reproduce(self, pos):
+        # Check range
+        if self.inActionRange(pos) == False:
+            return None
+        # Find obj
+        obj = self._base._map.getAtPos(pos)
+        if obj == None:
+            return None
+        # Minion from same team
+        if isinstance(obj, Minion) and obj.team == self.team and obj != self:
+            # Self must have enough food
+            if self.stats._food >= self.stats._reproduceFoodCost:
+                # Target must have enough food
+                if obj.stats._food >= obj.stats._reproduceFoodCost:
+                    # Reproduce #1
+                    obj.stats._food -= obj.stats._reproduceFoodCost
+                    obj._base._addMinionAroundGauss(obj.pos, obj.team)
+                    # Reproduce #2
+                    self.stats._food -= self.stats._reproduceFoodCost
+                    self._base._addMinionAroundGauss(self.pos, self.team)
+
 
     # Returns index of closest item in given objList
     def closest(self, objList):
