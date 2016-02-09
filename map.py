@@ -5,7 +5,7 @@ import random as random
 
 
 class Map:
-    size = (20, 20)
+    size = (150, 150)
     foodNum = 30
 
 
