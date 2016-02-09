@@ -58,25 +58,28 @@ class Game:
     def gameLoop(self):
 
         while self.gameHasEnded() == False:
-
-            # Game does its thing
-            self._base._teamTurn = -1
-            self.gameTurn(self._base)
-
-            # Run scripts of all players in turn
-            for p in self._players:
-                #print "Team", p.team, "-", p.name
-                self._base._teamTurn = p.team
-                p.runScript(self._base)
-
-            # Increment game turn count
-            self._base._turn += 1
-
-            # Output game state to display?
-            #self._base._map.printMap()
-            #time.sleep(0.1)
+            self.gameIteration()
 
         print "Turns:", self._base._turn
+
+    def gameIteration(self):
+        # Game does its thing
+        self._base._teamTurn = -1
+        self.gameTurn(self._base)
+
+        # Run scripts of all players in turn
+        for p in self._players:
+            #print "Team", p.team, "-", p.name
+            self._base._teamTurn = p.team
+            p.runScript(self._base)
+
+        # Increment game turn count
+        self._base._turn += 1
+
+        # Output game state to display?
+        #self._base._map.printMap()
+        #time.sleep(0.1)
+        
 
     def gameTurn(self, base):
         #base._map.populateFoodRandomly()
