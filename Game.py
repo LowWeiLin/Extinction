@@ -79,11 +79,11 @@ class Game:
         # Output game state to display?
         #self._base._map.printMap()
         #time.sleep(0.1)
-        
+
 
     def gameTurn(self, base):
-        #base._map.populateFoodRandomly()
-        pass
+        base._map.populateFoodRandomly()
+        #pass
 
     def gameHasEnded(self):
         #return self._base._turn > 10
