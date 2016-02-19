@@ -6,6 +6,12 @@ class Player:
     scriptFile = None
     script = None
 
+
+    _kills = 0
+    _deaths = 0
+    
+    _maxMinions = 30
+
     def __init__(self, t, scriptFile):
         self.team = t
         self.scriptFile = scriptFile
@@ -14,9 +20,6 @@ class Player:
         #self.script = 
 
     def runScript(self, base):
-        # TODO evaluate script provided
-
-        # TODO write simple test script
         
         foodList = base.findFood()
         for m in base.findOwnMinions():
@@ -34,4 +37,12 @@ class Player:
             if closestTeamMinionIndex != -1:
                 friendly = ownMinionsExceptSelf[closestTeamMinionIndex]
                 m.reproduce(friendly.pos)
+
+            # Attack
+            enemyMinions = base.findEnemyMinions()
+            closestEnemyMinionIndex = m.closest(enemyMinions)
+            if closestEnemyMinionIndex != -1:
+                enemy = enemyMinions[closestEnemyMinionIndex]
+                m.attack(enemy.pos)
+
 

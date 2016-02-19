@@ -6,12 +6,14 @@ import random as random
 
 class Map:
     size = (150, 150)
-    foodNum = 30
+    foodNum = 60
 
 
     grid = None
     minionList = []
     foodList = []
+
+    minionTeamList = {}
 
     def __init__(self):
         self.initializeEmptyMap()
@@ -79,7 +81,8 @@ class Map:
             self.addRandomFood()
 
     def addRandomFood(self):
-        pos = self.getRandomUnoccupiedPos()
+        pos = self.getRandomGaussUnoccipiedPos((75,75), 20)
+        #pos = self.getRandomUnoccupiedPos()
         if pos != None:
             food = Food.Food(pos, 1)
             self.addFood(food)
@@ -112,10 +115,17 @@ class Map:
             pos = minion.pos
             self.grid[pos[0]][pos[1]] = minion
 
+            if not minion.team in self.minionTeamList:
+                self.minionTeamList[minion.team] = []
+            self.minionTeamList[minion.team].append(minion)
+            
     def removeMinion(self, minion):
         self.minionList.remove(minion)
         pos = minion.pos
         self.grid[pos[0]][pos[1]] = None
+
+        if minion.team in self.minionTeamList:
+            self.minionTeamList[minion.team].remove(minion)
 
     def moveMinion(self, minion, newPos):
         if self.isOccupied(newPos) == False:
@@ -126,16 +136,25 @@ class Map:
 
     def getMinionsInTeam(self, team):
         minions = []
-        for m in self.minionList:
-            if m.team == team:
+        # for m in self.minionList:
+        #     if m.team == team:
+        #         minions.append(m)
+        if self.minionTeamList[team] != None:
+            for m in self.minionTeamList[team]:
                 minions.append(m)
         return minions
 
     def getMinionsNotInTeam(self, team):
         minions = []
-        for m in self.minionList:
-            if m.team != team:
-                minions.append(m)
+        # for m in self.minionList:
+        #     if m.team != team:
+        #         minions.append(m)
+
+        for t, minionTeamList in self.minionTeamList.items():
+            if t != team:
+                for m in minionTeamList:
+                    minions.append(m)
+
         return minions
         
 '''

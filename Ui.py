@@ -51,7 +51,7 @@ class App:
             pos = tuple([int(self.gridUiSize*(x+0.5)+self.offset) for x in food.pos])
             pygame.draw.circle(self._display_surf, color, pos, self.unitUiSize, 0)
 
-        numPlayers = len(self._game._players)
+        numPlayers = len(self._game._base._players)
         # Draw minions
         for minion in self._game._base._map.minionList:
             team = minion.team

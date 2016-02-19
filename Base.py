@@ -12,10 +12,18 @@ class Base:
     _turn = 0
     _teamTurn = -1
 
+    _players = []
+    _playerNextTeam = 0
+
     def __init__(self):
         self._map = Map.Map()
         self._turn = 0
 
+    # Returns player from team
+    def getPlayer(self, team):
+        for p in self._players:
+            if p.team == team:
+                return p
 
     # Returns list of minions from own team
     def findOwnMinions(self):
@@ -35,6 +43,9 @@ class Base:
 
     def _addMinion(self, minion):
         self._map.addMinion(minion)
+
+    def _removeMinion(self, minion):
+        self._map.removeMinion(minion)
 
     def _addMinionRand(self, team):
         randPos = self._map.getRandomUnoccupiedPos()

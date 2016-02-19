@@ -37,9 +37,26 @@ class Minion:
             if newPos != (-1, -1):
                 self._base._map.moveMinion(self, newPos)
 
-    def attack(self, pos):
-        pass
+    def _takeDmg(self, dmg, attacker):
+        self.stats._takeDmg(dmg, self, attacker)
 
+    def _die(self, attacker):
+        print "Died! ", self.team
+        self._base._removeMinion(self)
+
+    def attack(self, pos):
+        # Check range
+        if self.inAttackRange(pos) == False:
+            return None
+
+        # Find minion
+        obj = self._base._map.getAtPos(pos)
+        if obj == None:
+            return None
+        # Minion
+        if isinstance(obj, Minion):
+            obj._takeDmg(self.stats._dmg, self)
+            
     def pick(self, pos):
         # Check range
         if self.inActionRange(pos) == False:
@@ -57,7 +74,16 @@ class Minion:
     def inActionRange(self, pos):
         return self._base.dist(self.pos, pos) <= self.stats._actionRange
 
+    def inAttackRange(self, pos):
+        return self._base.dist(self.pos, pos) <= self.stats._attackRange
+
     def reproduce(self, pos):
+        # Check if max minion limit is hit
+        if self.team in self._base._map.minionTeamList:
+            if len(self._base._map.minionTeamList[self.team]) >= self._base.getPlayer(self.team)._maxMinions:
+                print "Limit hit"                
+                return None
+
         # Check range
         if self.inActionRange(pos) == False:
             return None

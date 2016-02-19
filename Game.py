@@ -11,9 +11,6 @@ class Game:
 
     _base = None
 
-    _players = []
-    _playerNextTeam = 0
-
     def __init__(self):
         self._base = Base.Base()
 
@@ -30,13 +27,13 @@ class Game:
 
     def addPlayer(self, player):
         # Add to player list
-        player.team = self._playerNextTeam
-        self._players.append(player)
+        player.team = self._base._playerNextTeam
+        self._base._players.append(player)
 
         # Give player starting minions
         self.spawnStartingMinion(player.team)
 
-        self._playerNextTeam += 1
+        self._base._playerNextTeam += 1
 
     def spawnStartingMinion(self, team):
         # First minion
@@ -58,7 +55,7 @@ class Game:
         self.gameTurn(self._base)
 
         # Run scripts of all players in turn
-        for p in self._players:
+        for p in self._base._players:
             #print "Team", p.team, "-", p.name
             self._base._teamTurn = p.team
             p.runScript(self._base)
