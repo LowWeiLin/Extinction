@@ -39,12 +39,12 @@ class Game:
         # First minion
         m = self._base._addMinionRand(team)
         # Second
-        if m != None:
+        if m is not None:
             self._base._addMinionAroundGauss(m.pos, team)
 
     def gameLoop(self):
 
-        while self.gameHasEnded() == False:
+        while self.gameHasEnded() is False:
             self.gameIteration()
 
         print "Turns:", self._base._turn
@@ -59,6 +59,9 @@ class Game:
             #print "Team", p.team, "-", p.name
             self._base._teamTurn = p.team
             p.runScript(self._base)
+
+        for m in self._base._map.minionList:
+            m.stats._consumeFood(m)
 
         # Increment game turn count
         self._base._turn += 1

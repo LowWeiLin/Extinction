@@ -3,6 +3,8 @@ import Food
 import Minion
 import random as random
 
+from Quadtree import *
+
 
 class Map:
     size = (150, 150)
@@ -13,10 +15,16 @@ class Map:
     minionList = []
     foodList = []
 
+    foodQuadtree = None
+
+    minionTeamQuadtree = {}
     minionTeamList = {}
+
+    quadtreeBoundary = AABB(Point((150/2, 150/2)), 150/2)
 
     def __init__(self):
         self.initializeEmptyMap()
+        self.foodQuadtree = Quadtree(self.quadtreeBoundary)
 
     def initializeEmptyMap(self):
         self.grid = []
@@ -28,7 +36,7 @@ class Map:
         for row in self.grid:
             asciiRow = []
             for cell in row:
-                if cell == None:
+                if cell is None:
                     asciiRow.append('-')
                 elif isinstance(cell, Food.Food):
                     asciiRow.append('F')
@@ -46,8 +54,8 @@ class Map:
     def getRandomUnoccupiedPos(self):
         for i in range(100):
             pos = (random.randint(0,self.size[0]-1), random.randint(0,self.size[1]-1))
-            if self.isOccupied(pos) == False:
-               return pos
+            if self.isOccupied(pos) is False:
+                return pos
         return None
 
     def getRandomGaussUnoccipiedPos(self, m, sigma=5):
@@ -55,17 +63,17 @@ class Map:
             random.gauss(m[0], sigma)
             pos = (self.clamp(int(random.gauss(m[0], sigma)), 0, self.size[0]-1),
                    self.clamp(int(random.gauss(m[1], sigma)), 0, self.size[1]-1))
-            if self.isOccupied(pos) == False:
-               return pos
+            if self.isOccupied(pos) is False:
+                return pos
         return None
 
     def getAtPos(self, pos):
-        if self.inMapRange(pos) == False:
+        if self.inMapRange(pos) is False:
             return None
         return self.grid[pos[0]][pos[1]]
 
     def isOccupied(self, pos):
-        return self.getAtPos(pos) != None
+        return self.getAtPos(pos) is not None
 
     def inMapRange(self, pos):
         return pos[0] >= 0 and pos[0] < self.size[0] and pos[1] >= 0 and pos[1] < self.size[1]
@@ -83,19 +91,21 @@ class Map:
     def addRandomFood(self):
         pos = self.getRandomGaussUnoccipiedPos((75,75), 20)
         #pos = self.getRandomUnoccupiedPos()
-        if pos != None:
+        if pos is not None:
             food = Food.Food(pos, 1)
             self.addFood(food)
 
     def addFood(self, food):
         # Check if cell is occupied
-        if self.isOccupied(food.pos) == False:
+        if self.isOccupied(food.pos) is False:
             self.foodList.append(food)
+            self.foodQuadtree.insert(Point(food.pos, food))
             pos = food.pos
             self.grid[pos[0]][pos[1]] = food
 
     def removeFood(self, food):
         self.foodList.remove(food)
+        self.foodQuadtree.remove(Point(food.pos, food))
         pos = food.pos
         self.grid[pos[0]][pos[1]] = None
         # Repopulate food randomly
@@ -110,14 +120,18 @@ class Map:
 
     def addMinion(self, minion):
         # Check if cell is occupied
-        if self.isOccupied(minion.pos) == False:
+        if self.isOccupied(minion.pos) is False:
             self.minionList.append(minion)
             pos = minion.pos
             self.grid[pos[0]][pos[1]] = minion
 
             if not minion.team in self.minionTeamList:
                 self.minionTeamList[minion.team] = []
+                self.minionTeamQuadtree[minion.team] = Quadtree(self.quadtreeBoundary)
+                
             self.minionTeamList[minion.team].append(minion)
+            self.minionTeamQuadtree[minion.team].insert(Point(minion.pos,minion))
+
             
     def removeMinion(self, minion):
         self.minionList.remove(minion)
@@ -127,21 +141,26 @@ class Map:
         if minion.team in self.minionTeamList:
             self.minionTeamList[minion.team].remove(minion)
 
+        self.minionTeamQuadtree[minion.team].remove(Point(minion.pos,minion))
+
     def moveMinion(self, minion, newPos):
-        if self.isOccupied(newPos) == False:
+        if self.isOccupied(newPos) is False:
+            # Remove from quadtree
+            self.minionTeamQuadtree[minion.team].remove(Point(minion.pos,minion))
+
             pos = minion.pos
             self.grid[pos[0]][pos[1]] = None
+            minion.prevPos = minion.pos
             minion.pos = newPos
             self.grid[newPos[0]][newPos[1]] = minion
 
+            # Re-insert into quadtree
+            self.minionTeamQuadtree[minion.team].insert(Point(minion.pos,minion))
+
     def getMinionsInTeam(self, team):
         minions = []
-        # for m in self.minionList:
-        #     if m.team == team:
-        #         minions.append(m)
-        if self.minionTeamList[team] != None:
-            for m in self.minionTeamList[team]:
-                minions.append(m)
+        if self.minionTeamList[team] is not None:
+            return self.minionTeamList[team][:]
         return minions
 
     def getMinionsNotInTeam(self, team):
@@ -152,8 +171,7 @@ class Map:
 
         for t, minionTeamList in self.minionTeamList.items():
             if t != team:
-                for m in minionTeamList:
-                    minions.append(m)
+                minions.extend(minionTeamList[:])
 
         return minions
         

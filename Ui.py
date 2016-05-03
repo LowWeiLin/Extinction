@@ -9,7 +9,7 @@ class App:
         self._display_surf = None
         self.size = self.weight, self.height = 800, 600
         self._ticks = 0
-        self._maxFps = 15
+        self._maxFps = 30
 
         self.offset = 20
         self.gridUiSize = 3
@@ -68,6 +68,32 @@ class App:
         fpsLabel = myfont.render(string, 1, (0,0,0))
         self._display_surf.blit(fpsLabel, (0, 0))
 
+        string = "Num minions: " + str(len(self._game._base._map.minionList))
+        fpsLabel = myfont.render(string, 1, (0,0,0))
+        self._display_surf.blit(fpsLabel, (600, 0))
+
+        string = "Num minions p1: " + str(len(self._game._base._map.minionTeamList[0]))
+        fpsLabel = myfont.render(string, 1, (0,0,0))
+        self._display_surf.blit(fpsLabel, (600, 20))
+        string = "Num minions p2: " + str(len(self._game._base._map.minionTeamList[1]))
+        fpsLabel = myfont.render(string, 1, (0,0,0))
+        self._display_surf.blit(fpsLabel, (600, 40))
+
+        string = "Num minions p1: " + str(self._game._base._map.minionTeamQuadtree[0].numPoints)
+        fpsLabel = myfont.render(string, 1, (0,0,0))
+        self._display_surf.blit(fpsLabel, (600, 60))
+        string = "Num minions p2: " + str(self._game._base._map.minionTeamQuadtree[1].numPoints)
+        fpsLabel = myfont.render(string, 1, (0,0,0))
+        self._display_surf.blit(fpsLabel, (600, 80))
+
+        string = "Num food: " + str(len(self._game._base._map.foodList))
+        fpsLabel = myfont.render(string, 1, (0,0,0))
+        self._display_surf.blit(fpsLabel, (600, 100))
+
+        string = "Num food: " + str(self._game._base._map.foodQuadtree.numPoints)
+        fpsLabel = myfont.render(string, 1, (0,0,0))
+        self._display_surf.blit(fpsLabel, (600, 120))
+
         # Switch buffer
         pygame.display.flip()
 
@@ -75,7 +101,7 @@ class App:
         pygame.quit()
  
     def on_execute(self):
-        if self.on_init() == False:
+        if self.on_init() is False:
             self._running = False
         
         self._clock = pygame.time.Clock()
@@ -93,7 +119,10 @@ class App:
             self._ticks += 1
 
         self.on_cleanup()
- 
-if __name__ == "__main__" :
+
+def main():
     theApp = App()
     theApp.on_execute()
+
+if __name__ == "__main__" :
+    main()

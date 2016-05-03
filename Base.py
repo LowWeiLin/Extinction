@@ -49,7 +49,7 @@ class Base:
 
     def _addMinionRand(self, team):
         randPos = self._map.getRandomUnoccupiedPos()
-        if randPos != None:
+        if randPos is not None:
             stats = self.getStartingStats()
             minion = Minion.Minion(self, team, randPos, stats)
             # Spawn
@@ -59,7 +59,7 @@ class Base:
 
     def _addMinionAroundGauss(self, randPos, team):
         randPos = self._map.getRandomGaussUnoccipiedPos(randPos)
-        if randPos != None:
+        if randPos is not None:
             stats = self.getStartingStats()
             minion = Minion.Minion(self, team, randPos, stats)
             # Spawn
@@ -69,3 +69,22 @@ class Base:
 
     def dist(self, pos0, pos1):
         return math.sqrt((pos0[0] - pos1[0])**2 + (pos0[1] - pos1[1])**2)
+
+    def add(self, pos0, pos1):
+        return (pos0[0] + pos1[0], pos0[1] + pos1[1])
+
+    def minus(self, pos0, pos1):
+        return (pos0[0] - pos1[0], pos0[1] - pos1[1])
+
+    def mul(self, pos, s):
+        return (pos[0] * s, pos[1] * s)
+
+    def unit(self, pos):
+        mag = self.magnitude(pos)
+        if mag == 0:
+            return (0, 0)
+        return self.mul(pos, 1/mag)
+
+    def magnitude(self, pos):
+        return math.sqrt(pos[0]**2 + pos[1]**2)
+        

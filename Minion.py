@@ -1,6 +1,7 @@
 import Base
 import Stats
 import Food
+from Quadtree import *
 
 INF = 1000000000
 
@@ -10,12 +11,14 @@ class Minion:
 
     team = -1
     pos = None
+    prevPos = None
     stats = None
 
     def __init__(self, base, team, pos, stats):
         self._base = base
         self.team = team
         self.pos = pos
+        self.prevPos = pos
         self.stats = stats
         
     def moveTo(self, targetPos):
@@ -28,7 +31,7 @@ class Minion:
                         continue
                     x = self.pos[0] + xOff
                     y = self.pos[1] + yOff
-                    if self._base._map.inMapRange((x,y)) == False:
+                    if self._base._map.inMapRange((x,y)) is False:
                         continue
                     dist = self._base.dist(targetPos, (x,y))
                     if dist < minDist:
@@ -41,17 +44,17 @@ class Minion:
         self.stats._takeDmg(dmg, self, attacker)
 
     def _die(self, attacker):
-        print "Died! ", self.team
+        #print "Died! ", self.team
         self._base._removeMinion(self)
 
     def attack(self, pos):
         # Check range
-        if self.inAttackRange(pos) == False:
+        if self.inAttackRange(pos) is False:
             return None
 
         # Find minion
         obj = self._base._map.getAtPos(pos)
-        if obj == None:
+        if obj is None:
             return None
         # Minion
         if isinstance(obj, Minion):
@@ -59,12 +62,12 @@ class Minion:
             
     def pick(self, pos):
         # Check range
-        if self.inActionRange(pos) == False:
+        if self.inActionRange(pos) is False:
             return None
 
         # Find item
         obj = self._base._map.getAtPos(pos)
-        if obj == None:
+        if obj is None:
             return None
         # Food
         if isinstance(obj, Food.Food):
@@ -80,16 +83,15 @@ class Minion:
     def reproduce(self, pos):
         # Check if max minion limit is hit
         if self.team in self._base._map.minionTeamList:
-            if len(self._base._map.minionTeamList[self.team]) >= self._base.getPlayer(self.team)._maxMinions:
-                print "Limit hit"                
+            if len(self._base._map.minionTeamList[self.team]) >= self._base.getPlayer(self.team)._maxMinions:           
                 return None
 
         # Check range
-        if self.inActionRange(pos) == False:
+        if self.inActionRange(pos) is False:
             return None
         # Find obj
         obj = self._base._map.getAtPos(pos)
-        if obj == None:
+        if obj is None:
             return None
         # Minion from same team
         if isinstance(obj, Minion) and obj.team == self.team and obj != self:
@@ -105,7 +107,7 @@ class Minion:
                     self._base._addMinionAroundGauss(self.pos, self.team)
 
 
-    # Returns index of closest item in given objList
+    # Returns closest item in given objList
     def closest(self, objList):
         minDist = INF
         index = -1
@@ -114,5 +116,63 @@ class Minion:
             if dist < minDist:
                 minDist = dist
                 index = i
-        return index
 
+        if index == -1:
+            return None
+
+        return objList[index]
+
+        # sortedList = self.sortedByDistance(objList)
+        # if len(sortedList) == 0:
+        #     return None
+
+        # return sortedList[0]
+
+    def closestFood(self):
+        closestFood = self._base._map.foodQuadtree.queryNearest(Point(self.pos))
+        if closestFood is not None:
+            closestFood = closestFood[0].obj
+        return closestFood
+
+    def closestFriendly(self, k=1):
+        if self._base._map.minionTeamQuadtree[self.team] is None:
+            return None
+
+        points = self._base._map.minionTeamQuadtree[self.team].queryKNearest(Point(self.pos), k)
+        closestFriendlyList = []
+        for point in points:
+            closestFriendlyList.append(point.obj)
+
+        return closestFriendlyList
+
+    def closestEnemy(self, k=1):
+        if self._base._map.minionTeamQuadtree[self.team] is None:
+            return None
+
+        enemies = []
+        for t, minionTeamList in self._base._map.minionTeamQuadtree.items():
+            if t != self.team:
+                points = self._base._map.minionTeamQuadtree[t].queryKNearest(Point(self.pos), k)
+                enemyList = []
+                for point in points:
+                    enemyList.append(point.obj)
+                enemies.extend(enemyList)
+
+        return self.sortedByDistance(enemies)[:k]
+
+    # Returns sorted list based on how close ibj is
+    def sortedByDistance(self, objList):
+        sortedObjList = objList[:]
+
+        for i in range(len(sortedObjList)):
+            for j in range(i, len(sortedObjList)):
+                if i == j:
+                    continue
+                disti = self._base.dist(self.pos, sortedObjList[i].pos)
+                distj = self._base.dist(self.pos, sortedObjList[j].pos)
+                if disti > distj:
+                    temp = sortedObjList[i]
+                    sortedObjList[i] = sortedObjList[j]
+                    sortedObjList[j] = temp
+
+        return sortedObjList
